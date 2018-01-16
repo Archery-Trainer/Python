@@ -24,6 +24,7 @@ import time
 import argparse
 import json
 import serial
+import serial.tools.list_ports
 
 AllowedActions = ['both', 'publish', 'subscribe']
 
@@ -34,6 +35,12 @@ def customCallback(client, userdata, message):
     print("from topic: ")
     print(message.topic)
     print("--------------\n\n")
+
+# utility method to get serial port
+def getFirstPort():
+   ports=[comport.device for comport in serial.tools.list_ports.comports()]
+   return ports[0]   
+
 
 
 # Read in command-line parameters
@@ -106,8 +113,9 @@ if args.mode == 'both' or args.mode == 'subscribe':
 time.sleep(2)
 
 #Read muscle sensor value with 9600 baud rate 
-ser=serial.Serial('/dev/ttyACM1',19200)
-
+ser=serial.Serial(getFirstPort(),19200) #'/dev/ttyACM1'
+ser.close()
+ser.open() #closing and opening serial port sets it  correctly (removes garbled msgs)
 # Publish to the same topic in a loop forever
 loopCount = 0
 while True:
@@ -115,8 +123,8 @@ while True:
     if args.mode == 'both' or args.mode == 'publish':
         message = {}
         message['message'] = args.message
-	val = ser.readline()
-	#print('Muscle sensor value: %s\n' % val)
+	val = ser.readline().decode("utf-8", "ignore") # ingnores garbled chars
+	print('Muscle sensor: %s\n' % val)
         message['sensor'] = val.replace('\r\n','')  #loopCount
         messageJson = json.dumps(message)
         myAWSIoTMQTTClient.publish(topic, messageJson, 1)
