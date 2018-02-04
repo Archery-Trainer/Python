@@ -121,6 +121,7 @@ ser.open() #closing and opening serial port sets it  correctly (removes garbled 
 # Publish to the same topic in a loop forever
 loopCount = 0
 
+arduinoMessage =""
 
 while True:
 
