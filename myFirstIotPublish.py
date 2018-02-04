@@ -128,16 +128,16 @@ while True:
     loopCount += 1
 	
     if args.mode == 'both' or args.mode == 'publish':
-        #arduinon viesti
-        #puoliPisteCounter = 0
-        #while puoliPisteCounter <= 3:
         
+        #arduinon viesti       
         arduinoMessage = ser.readline()
 
-        #puoliPisteCounter = puoliPisteCounter + 1
         print arduinoMessage
+        # removes /r/n
+        arduinoMessage = arduinoMessage.rstrip()
         #erotetaan counter ja eri arvot
         arduinoList = arduinoMessage.split(";",)
+       
         print len(arduinoList)
 
         #sensors is a list of measured sensor values following line is for test purposes  ehkapa 'sensors': ser.readline().decode("utf-8", "ignore") # ingnores garbled chars
@@ -145,12 +145,10 @@ while True:
 
         print arduinoList
 
+        #ignores the first 10 values, could be smaller
         if loopCount < 10:
             del arduinoList[0:7]
             continue
-
-
-        arduinoList[6].replace("/r/n", "")
 
         message = {
         
