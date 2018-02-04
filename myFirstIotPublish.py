@@ -1,3 +1,4 @@
+
 '''
 /*
  * Copyright 2010-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
@@ -25,6 +26,7 @@ import argparse
 import json
 import serial
 import serial.tools.list_ports
+import random
 
 AllowedActions = ['both', 'publish', 'subscribe']
 
@@ -113,22 +115,88 @@ if args.mode == 'both' or args.mode == 'subscribe':
 time.sleep(2)
 
 #Read muscle sensor value with 9600 baud rate 
-ser=serial.Serial(getFirstPort(),19200) #'/dev/ttyACM1'
+ser=serial.Serial('/dev/ttyACM0',9600) #'/dev/ttyACM1' # tai 19200
 ser.close()
 ser.open() #closing and opening serial port sets it  correctly (removes garbled msgs)
 # Publish to the same topic in a loop forever
 loopCount = 0
+
+
 while True:
+
+    loopCount += 1
 	
     if args.mode == 'both' or args.mode == 'publish':
-        message = {}
-        message['message'] = args.message
-	val = ser.readline().decode("utf-8", "ignore") # ingnores garbled chars
-	print('Muscle sensor: %s\n' % val)
-        message['sensor'] = val.replace('\r\n','')  #loopCount
+        #arduinon viesti
+        #puoliPisteCounter = 0
+        #while puoliPisteCounter <= 3:
+        
+        arduinoMessage = ser.readline()
+
+        #puoliPisteCounter = puoliPisteCounter + 1
+        print arduinoMessage
+        #erotetaan counter ja eri arvot
+        arduinoList = arduinoMessage.split(";",)
+        print len(arduinoList)
+
+        #sensors is a list of measured sensor values following line is for test purposes  ehkapa 'sensors': ser.readline().decode("utf-8", "ignore") # ingnores garbled chars
+        # 14... voisi korvata myohemmin A0... tai jtn
+
+        print arduinoList
+
+        if loopCount < 10:
+            del arduinoList[0:7]
+            continue
+
+
+        arduinoList[6].replace("/r/n", "")
+
+        message = {
+        
+        'timestamp': int(time.time()),
+        'counter': arduinoList[0],  
+		
+        'sensors': [
+            {
+                'sensorId': '14', 
+                'value': arduinoList[1]
+            },
+            {
+                'sensorId': '15', 
+                'value': arduinoList[2]
+            }, 
+            {
+                'sensorId': '16',
+                'value': arduinoList[3]
+            },
+            {
+                'sensorId': '17',
+                'value': arduinoList[4]
+            },
+            {
+                'sensorId' : '18',
+                'value': arduinoList[5]
+            },
+            {
+                'sensorId': '19',
+                'value': arduinoList[6]
+            }
+        ]
+        }
+        
+
+		#val = ser.readline().decode("utf-8", "ignore") # ingnores garbled chars
+	
+        print('Muscle sensor: %s\n' % arduinoMessage )
+        #message['sensor'] = val.replace('\r\n','')  #loopCount
+        
+
+
         messageJson = json.dumps(message)
         myAWSIoTMQTTClient.publish(topic, messageJson, 1)
         if args.mode == 'publish':
-            print('Published topic %s: %s\n' % (topic, messageJson))
-        loopCount += 1
+           print('Published topic %s: %s\n' % (topic, messageJson))
+        
+        arduinoMessage = ""
+        del arduinoList[0:7]
     time.sleep(1)
