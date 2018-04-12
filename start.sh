@@ -1,3 +1,5 @@
+# Downloads non-unique required files and runs the Archery Trainer main program
+
 # stop script on error
 set -e
 
@@ -18,4 +20,6 @@ fi
 
 # run pub/sub sample app using certificates downloaded in package
 printf "\nRunning pub/sub sample application...\n"
-python myFirstIotPublish.py -e a20pmpdacgwj4.iot.us-east-1.amazonaws.com -r rootKey.pem -c certificate.pem.crt -k privateKey.pem.key 
+python myFirstIotPublish.py -e  a20pmpdacgwj4.iot.eu-central-1.amazonaws.com -r rootKey.pem -c certificate.pem.crt -k privateKey.pem.key
+
+#old one: #python myFirstIotPublish.py -e a20pmpdacgwj4.iot.us-east-1.amazonaws.com -r rootKey.pem -c certificate.pem.crt -k privateKey.pem.key
