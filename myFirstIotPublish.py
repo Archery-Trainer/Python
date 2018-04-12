@@ -58,6 +58,7 @@ def getFirstPort():
 	ports=[comport.device for comport in serial.tools.list_ports.comports()]
 	return ports[0]   
 
+# start of standard AWS stuff
 # Read in command-line parameters
 parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--endpoint", action="store", required=True, dest="host", help="Your AWS IoT custom endpoint")
@@ -120,6 +121,8 @@ myAWSIoTMQTTClient.configureOfflinePublishQueueing(-1)  # Infinite offline Publi
 myAWSIoTMQTTClient.configureDrainingFrequency(2)  # Draining: 2 Hz
 myAWSIoTMQTTClient.configureConnectDisconnectTimeout(10)  # 10 sec
 myAWSIoTMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
+
+#end of standard AWS stuff
 
 # Connect and subscribe to AWS IoT
 myAWSIoTMQTTClient.connect()
