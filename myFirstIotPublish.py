@@ -1,6 +1,6 @@
 '''
 /*
- * Reads serial USB. The read message is a string with counter and  6 values separeted with ';' e.g. "1;100;100;100;100;100;100".
+ * Reads serial USB '/dev/ttyACM0',115200. The read message is a string with counter and  6 values separeted with ';' e.g. "1;100;100;100;100;100;100".
  * The message is sent to AWS cloud according the agruments. The message is a JSON containing timestamp, counter and sensor values.
  * AWS library and more info: https://github.com/aws/aws-iot-device-sdk-python
  * Required:
